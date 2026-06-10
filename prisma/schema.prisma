@@ -1,0 +1,246 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  passwordHash String
+  name         String
+  role         String     @default("recruiter")
+  createdAt    DateTime   @default(now())
+  auditLogs    AuditLog[]
+}
+
+model Candidate {
+  id                String           @id @default(cuid())
+  candidateName     String
+  email             String?
+  phone             String?
+  skills            String
+  totalExperience   String?
+  rawResumeText     String?
+  credibilityFlags  String?
+  credibilityScore  Float?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  projects          Project[]
+  education         Education[]
+  internships       Internship[]
+  workExperience    WorkExperience[]
+  matches           CandidateMatch[]
+  applications      Application[]
+  messageLogs       MessageLog[]
+}
+
+model Education {
+  id          String    @id @default(cuid())
+  candidateId String
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  orderIndex  Int
+  institution String
+  degree      String?
+  field       String?
+  duration    String?
+  grade       String?
+  location    String?
+  description String?
+  createdAt   DateTime  @default(now())
+
+  @@index([candidateId])
+}
+
+model Internship {
+  id               String    @id @default(cuid())
+  candidateId      String
+  candidate        Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  orderIndex       Int
+  company          String
+  role             String?
+  duration         String?
+  location         String?
+  responsibilities String?
+  technologies     String
+  createdAt        DateTime  @default(now())
+
+  @@index([candidateId])
+}
+
+model WorkExperience {
+  id               String    @id @default(cuid())
+  candidateId      String
+  candidate        Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  orderIndex       Int
+  company          String
+  role             String?
+  duration         String?
+  location         String?
+  department       String?
+  scopeOfWork      String?
+  responsibilities String?
+  technologies     String
+  createdAt        DateTime  @default(now())
+
+  @@index([candidateId])
+}
+
+model Project {
+  id               String    @id @default(cuid())
+  candidateId      String
+  candidate        Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  orderIndex       Int
+  name             String
+  clientName       String?
+  projectType      String?
+  technologies     String
+  role             String?
+  duration         String?
+  durationStart    DateTime?
+  durationEnd      DateTime?
+  teamSize         String?
+  responsibilities String?
+  ownershipLevel   String?
+  managerDetails   String?
+  businessImpact   String
+  reviewStatus     String    @default("pending")
+  reviewNote       String?
+  reviewedAt       DateTime?
+  createdAt        DateTime  @default(now())
+
+  @@index([candidateId])
+  @@index([clientName])
+}
+
+model JobDescription {
+  id             String           @id @default(cuid())
+  title          String
+  content        String
+  requiredSkills String
+  createdAt      DateTime         @default(now())
+  matches        CandidateMatch[]
+  applications   Application[]
+}
+
+model CandidateMatch {
+  id               String         @id @default(cuid())
+  candidateId      String
+  jobDescriptionId String
+  fitScore         Float
+  matchedSkills    String
+  missingSkills    String
+  notes            String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  candidate        Candidate      @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  jobDescription   JobDescription @relation(fields: [jobDescriptionId], references: [id], onDelete: Cascade)
+
+  @@unique([candidateId, jobDescriptionId])
+  @@index([jobDescriptionId, fitScore])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  action     String
+  entityType String
+  entityId   String?
+  details    String?
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model Application {
+  id               String          @id @default(cuid())
+  candidateId      String
+  jobDescriptionId String?
+  stage            String          @default("applied")
+  notes            String?
+  stageChangedAt   DateTime        @default(now())
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  candidate        Candidate       @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  jobDescription   JobDescription? @relation(fields: [jobDescriptionId], references: [id], onDelete: SetNull)
+  scheduledTasks   ScheduledTask[]
+  messageLogs      MessageLog[]
+
+  @@index([stage])
+  @@index([candidateId])
+  @@index([jobDescriptionId])
+}
+
+model EmailTemplate {
+  id        String         @id @default(cuid())
+  key       String         @unique
+  name      String
+  subject   String
+  bodyHtml  String
+  bodyText  String?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  rules     WorkflowRule[]
+  messages  MessageLog[]
+}
+
+model WorkflowRule {
+  id           String          @id @default(cuid())
+  name         String
+  enabled      Boolean         @default(true)
+  triggerType  String
+  triggerStage String?
+  delayHours   Int?
+  templateId   String
+  template     EmailTemplate   @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  scheduledTasks ScheduledTask[]
+  messages     MessageLog[]
+
+  @@index([enabled, triggerType])
+  @@index([triggerStage])
+}
+
+model ScheduledTask {
+  id            String       @id @default(cuid())
+  ruleId        String
+  applicationId String
+  candidateId   String
+  runAt         DateTime
+  status        String       @default("pending")
+  error         String?
+  createdAt     DateTime     @default(now())
+  processedAt   DateTime?
+  rule          WorkflowRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  application   Application  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([status, runAt])
+  @@index([applicationId])
+}
+
+model MessageLog {
+  id            String         @id @default(cuid())
+  applicationId String?
+  candidateId   String
+  ruleId        String?
+  templateId    String?
+  toEmail       String
+  subject       String
+  status        String
+  error         String?
+  providerId    String?
+  createdAt     DateTime       @default(now())
+  application   Application?   @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+  candidate     Candidate      @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  template      EmailTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  rule          WorkflowRule?  @relation(fields: [ruleId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([candidateId])
+}
