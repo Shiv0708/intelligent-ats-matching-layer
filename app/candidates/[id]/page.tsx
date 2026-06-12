@@ -4,11 +4,20 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import CandidateProfile, { type ProjectPeerMatchView } from '@/components/CandidateProfile';
 import type { CandidateRecord } from '@/lib/types/resume';
+import type { PipelineStageId } from '@/lib/pipeline-stages';
+import { PIPELINE_STAGES } from '@/lib/pipeline-stages';
+
+interface PipelineApplication {
+  id: string;
+  stage: PipelineStageId;
+  notes: string | null;
+}
 
 export default function CandidateDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const [candidate, setCandidate] = useState<CandidateRecord | null>(null);
   const [peerMatches, setPeerMatches] = useState<ProjectPeerMatchView[]>([]);
+  const [application, setApplication] = useState<PipelineApplication | null>(null);
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({ candidateName: '', email: '', phone: '', totalExperience: '', skills: '' });
   const [error, setError] = useState<string | null>(null);
@@ -16,19 +25,23 @@ export default function CandidateDetailPage({ params }: { params: { id: string }
 
   const load = useCallback(async () => {
     setLoading(true);
-    const [res, peerRes] = await Promise.all([
+    const [res, peerRes, appRes] = await Promise.all([
       fetch(`/api/candidates/${params.id}`),
       fetch(`/api/candidates/${params.id}/peer-matches`),
+      fetch(`/api/pipeline/by-candidate/${params.id}`),
     ]);
     const data = await res.json();
     const peerData = peerRes.ok ? await peerRes.json() : { peerMatches: [] };
+    const appData = appRes.ok ? await appRes.json() : { application: null };
     if (!res.ok) {
       setError(data.error || 'Not found');
       setCandidate(null);
       setPeerMatches([]);
+      setApplication(null);
     } else {
       setCandidate(data.candidate);
       setPeerMatches(peerData.peerMatches ?? []);
+      setApplication(appData.application ?? null);
       setForm({
         candidateName: data.candidate.candidateName,
         email: data.candidate.email ?? '',
@@ -82,6 +95,26 @@ export default function CandidateDetailPage({ params }: { params: { id: string }
     load();
   };
 
+  const handleMoveStage = async (newStage: PipelineStageId) => {
+    if (!application) return;
+    const res = await fetch(`/api/pipeline/${application.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ stage: newStage }),
+    });
+    if (res.ok) {
+      load();
+    }
+  };
+
+  const handleMoveNextStage = async () => {
+    if (!application) return;
+    const currentIndex = PIPELINE_STAGES.findIndex((s) => s.id === application.stage);
+    if (currentIndex === -1 || currentIndex === PIPELINE_STAGES.length - 1) return;
+    const nextStage = PIPELINE_STAGES[currentIndex + 1].id;
+    await handleMoveStage(nextStage);
+  };
+
   if (loading) return <main className="container"><p className="muted">Loading…</p></main>;
   if (error || !candidate) return <main className="container"><p className="error-text">{error || 'Not found'}</p></main>;
 
@@ -128,9 +161,12 @@ export default function CandidateDetailPage({ params }: { params: { id: string }
             candidate={candidate}
             peerMatches={peerMatches}
             showActions
+            application={application}
             onDelete={handleDelete}
             onExport={() => { window.location.href = `/api/candidates/${params.id}?format=csv`; }}
             onReviewProject={handleReview}
+            onMoveStage={handleMoveStage}
+            onMoveToNextStage={handleMoveNextStage}
           />
         )}
       </section>

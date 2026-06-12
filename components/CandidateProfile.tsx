@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import type { CandidateRecord } from '@/lib/types/resume';
+import { PIPELINE_STAGES, getStageMeta, type PipelineStageId } from '@/lib/pipeline-stages';
 
 export interface ProjectPeerMatchView {
   projectId: string;
@@ -19,9 +20,18 @@ export interface ProjectPeerMatchView {
   }>;
 }
 
+interface PipelineApplicationView {
+  id: string;
+  stage: PipelineStageId;
+  notes: string | null;
+}
+
 interface CandidateProfileProps {
   candidate: CandidateRecord;
   peerMatches?: ProjectPeerMatchView[];
+  application?: PipelineApplicationView | null;
+  onMoveStage?: (newStage: PipelineStageId) => void;
+  onMoveToNextStage?: () => void;
   onReviewProject?: (projectId: string, status: 'approved' | 'rejected', note?: string) => void;
   showActions?: boolean;
   onDelete?: () => void;
@@ -38,12 +48,16 @@ function scoreClass(score: number | null) {
 export default function CandidateProfile({
   candidate,
   peerMatches = [],
+  application,
+  onMoveStage,
+  onMoveToNextStage,
   onReviewProject,
   showActions,
   onDelete,
   onExport,
 }: CandidateProfileProps) {
   const peersByProject = new Map(peerMatches.map((m) => [m.projectId, m.peers]));
+  const currentStage = application ? getStageMeta(application.stage) : null;
   return (
     <div>
       <div className="profile-header">
@@ -57,6 +71,40 @@ export default function CandidateProfile({
           </div>
         )}
       </div>
+
+      {application && (
+        <div className="pipeline-stage-panel">
+          <div className="pipeline-stage-current">
+            <strong>Pipeline stage:</strong>{' '}
+            <span className="stage-badge" style={{ backgroundColor: currentStage?.color ?? '#d1d5db' }}>
+              {currentStage?.label ?? 'Unknown'}
+            </span>
+          </div>
+          <div className="pipeline-stage-actions">
+            <label className="stage-select-label">
+              Move to stage
+              <select
+                value={application.stage}
+                onChange={(event) => onMoveStage?.(event.target.value as PipelineStageId)}
+              >
+                {PIPELINE_STAGES.map((stage) => (
+                  <option key={stage.id} value={stage.id}>
+                    {stage.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={onMoveToNextStage}
+              disabled={!onMoveToNextStage}
+            >
+              Move to next stage
+            </button>
+          </div>
+        </div>
+      )}
 
       {showActions && (
         <div className="action-row">
