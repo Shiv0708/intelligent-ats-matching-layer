@@ -94,15 +94,15 @@ export default function HomePage() {
           </p>
           <ul className="parse-hero-features">
             <li>
-              <span className="parse-feature-icon" aria-hidden>📋</span>
+              <span className="parse-feature-icon" aria-hidden></span>
               Project-centric profiles
             </li>
             <li>
-              <span className="parse-feature-icon" aria-hidden>⚡</span>
+              <span className="parse-feature-icon" aria-hidden></span>
               Credibility scoring
             </li>
             <li>
-              <span className="parse-feature-icon" aria-hidden>🎯</span>
+              <span className="parse-feature-icon" aria-hidden></span>
               Job matching ready
             </li>
           </ul>

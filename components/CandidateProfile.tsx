@@ -216,79 +216,98 @@ export default function CandidateProfile({
         <h3 className="section-title">Projects</h3>
       )}
 
-      {candidate.projects.map((project, index) => (
-        <div className="project-card" key={project.id}>
-          <div className="project-header">
-            <h3>Project {index + 1}: {project.name}</h3>
-            <span className={`review-badge review-${project.reviewStatus}`}>
-              {project.reviewStatus}
-            </span>
+      {candidate.projects.map((project, index) => {
+        const responsibilityLines = (project.responsibilities || '')
+          .split(/[\.\n]+/)
+          .map((line) => line.trim())
+          .filter(Boolean);
+        const summaryLine = responsibilityLines[0] || '';
+        const contributionLines = responsibilityLines.slice(1);
+        const title = project.name || project.clientName || project.projectType || `Project ${index + 1}`;
+
+        return (
+          <div className="project-card" key={project.id}>
+            <div className="project-header">
+              <h3>{title}</h3>
+              <span className={`review-badge review-${project.reviewStatus}`}>
+                {project.reviewStatus}
+              </span>
+            </div>
+            <p><strong>Client:</strong> {project.clientName || '—'}</p>
+            <p><strong>Project type:</strong> {project.projectType || '—'}</p>
+            <p><strong>Role:</strong> {project.role || '—'}</p>
+            <p><strong>Duration:</strong> {project.duration || '—'}</p>
+            {summaryLine && (
+              <p><strong>Summary:</strong> {summaryLine}</p>
+            )}
+            {contributionLines.length > 0 && (
+              <div>
+                <strong>Contributions:</strong>
+                <ul>
+                  {contributionLines.map((line, contributionIndex) => (
+                    <li key={contributionIndex}>{line}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            <div className="tag-row">
+              {project.technologies.map((tech) => (
+                <span className="tag" key={tech}>{tech}</span>
+              ))}
+            </div>
+            {Object.keys(project.businessImpact).length > 0 && (
+              <div className="impact-block">
+                <strong>Business impact</strong>
+                <ul>
+                  {Object.entries(project.businessImpact).map(([key, value]) => (
+                    <li key={key}><code>{key}</code>: {value}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {onReviewProject && project.reviewStatus === 'pending' && (
+              <div className="action-row">
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => onReviewProject(project.id, 'approved')}
+                >
+                  Approve
+                </button>
+                <button
+                  type="button"
+                  className="btn-danger"
+                  onClick={() => {
+                    const note = window.prompt('Rejection reason (optional):') ?? undefined;
+                    onReviewProject(project.id, 'rejected', note);
+                  }}
+                >
+                  Reject
+                </button>
+              </div>
+            )}
+            {project.reviewNote && (
+              <p className="muted"><strong>Review note:</strong> {project.reviewNote}</p>
+            )}
+            {(peersByProject.get(project.id)?.length ?? 0) > 0 && (
+              <div className="peer-match-inline">
+                <strong>Same-client colleagues</strong>
+                <ul>
+                  {peersByProject.get(project.id)!.map((peer) => (
+                    <li key={`${peer.candidateId}-${peer.projectId}`}>
+                      <Link href={`/candidates/${peer.candidateId}`}>{peer.candidateName}</Link>
+                      {' — '}
+                      {peer.projectName}
+                      {peer.duration ? ` (${peer.duration})` : ''}
+                      <span className="muted"> · {peer.overlapNote}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
-          <p><strong>Client:</strong> {project.clientName || '—'}</p>
-          <p><strong>Project type:</strong> {project.projectType || '—'}</p>
-          <p><strong>Role:</strong> {project.role || '—'}</p>
-          <p><strong>Duration:</strong> {project.duration || '—'}</p>
-          <p><strong>Team size:</strong> {project.teamSize || '—'}</p>
-          <p><strong>Ownership:</strong> {project.ownershipLevel || '—'}</p>
-          <p><strong>Manager:</strong> {project.managerDetails || '—'}</p>
-          <p><strong>Responsibilities:</strong> {project.responsibilities || '—'}</p>
-          <div className="tag-row">
-            {project.technologies.map((tech) => (
-              <span className="tag" key={tech}>{tech}</span>
-            ))}
-          </div>
-          {Object.keys(project.businessImpact).length > 0 && (
-            <div className="impact-block">
-              <strong>Business impact</strong>
-              <ul>
-                {Object.entries(project.businessImpact).map(([key, value]) => (
-                  <li key={key}><code>{key}</code>: {value}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {onReviewProject && project.reviewStatus === 'pending' && (
-            <div className="action-row">
-              <button
-                type="button"
-                className="btn-secondary"
-                onClick={() => onReviewProject(project.id, 'approved')}
-              >
-                Approve
-              </button>
-              <button
-                type="button"
-                className="btn-danger"
-                onClick={() => {
-                  const note = window.prompt('Rejection reason (optional):') ?? undefined;
-                  onReviewProject(project.id, 'rejected', note);
-                }}
-              >
-                Reject
-              </button>
-            </div>
-          )}
-          {project.reviewNote && (
-            <p className="muted"><strong>Review note:</strong> {project.reviewNote}</p>
-          )}
-          {(peersByProject.get(project.id)?.length ?? 0) > 0 && (
-            <div className="peer-match-inline">
-              <strong>Same-client colleagues</strong>
-              <ul>
-                {peersByProject.get(project.id)!.map((peer) => (
-                  <li key={`${peer.candidateId}-${peer.projectId}`}>
-                    <Link href={`/candidates/${peer.candidateId}`}>{peer.candidateName}</Link>
-                    {' — '}
-                    {peer.projectName}
-                    {peer.duration ? ` (${peer.duration})` : ''}
-                    <span className="muted"> · {peer.overlapNote}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

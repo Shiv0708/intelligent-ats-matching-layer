@@ -68,10 +68,11 @@ Rules:
 - For work_experience: extract employer blocks that appear as "COMPANY NAME" with dates (e.g. "MUKUNDA SUMI STEEL LTD" FEB 2025 to PRESENT), or quoted names like "JSW Cement ltd" SEP 2021 to JAN2025, often between SUMMARY and SKILLS sections.
 - Map Department:, Scope of work:, Role:, Location: lines under each employer into department, scope_of_work, role, location respectively.
 - Jr./Junior Engineer at a company is work_experience, NOT an internship, unless explicitly labeled intern/trainee.
-- projects[] = named deliverables, products, client engagements, or items under a Projects section — NOT the same as listing an employer. Do NOT put employer-only history in projects[].
-- List every distinct deliverable/project as a separate projects[] item only when the resume has a real Projects section or named engagements.
-- client_name = the organization the project served (bank, retailer, government agency, etc.), even when the candidate's employer was a consulting/vendor firm. Use "" only if no client is identifiable.
-- project_type = one concise label for the kind of work (integration, ERP rollout, API modernization, etc.).
+- projects[] = named deliverables, products, client engagements, or customer-facing deliveries — NOT employer-level history. Do NOT put employer-only work_experience into projects[].
+- If a single employer or work_experience block describes multiple client engagements, extract each engagement as its own projects[] entry. Do not merge multiple clients into one project or one responsibilities paragraph.
+- If an engagement does not include a distinct project name, use the client_name and project_type to identify it clearly.
+- client_name = the organization the project served (bank, retailer, government agency, end client), even when the candidate's employer was a consulting/vendor firm. Use "" only if no client is identifiable.
+- project_type = one concise label for the kind of work (integration, ERP rollout, API modernization, payment platform, etc.).
 - business_impact keys must be snake_case describing the metric (e.g. reduce_settlement_delays, improve_api_response_time).
 - Include percentage or numbers in business_impact values when present in the resume.
 - skills = all technical and professional skills found across the resume.
