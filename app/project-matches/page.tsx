@@ -238,7 +238,7 @@ export default function ProjectMatchesPage() {
   };
 
   return (
-    <main className="container">
+    <main className="container-project-matches">
       <h1 className="page-title">Project matching</h1>
       <p className="muted page-lead">
         Browse all candidates, inspect parsed project details, and autofill matching criteria from a selected project.
@@ -279,7 +279,11 @@ export default function ProjectMatchesPage() {
                   >
                     <strong>{candidate.candidateName}</strong>
                     <span className="muted">{candidate.totalExperience || 'No experience listed'}</span>
-                    <span className="muted">{candidate.skills.slice(0, 3).join(', ')}</span>
+                    <div className="skills-preview">
+                      {candidate.skills.slice(0, 3).map((skill) => (
+                        <span key={skill} className="skill-badge">{skill}</span>
+                      ))}
+                    </div>
                   </button>
                 </li>
               ))}
@@ -311,7 +315,15 @@ export default function ProjectMatchesPage() {
                 </div>
                 <div>
                   <span className="label">Skills</span>
-                  <p>{selectedCandidate.skills.join(', ') || '—'}</p>
+                  {selectedCandidate.skills.length > 0 ? (
+                    <div className="skills-container">
+                      {selectedCandidate.skills.map((skill) => (
+                        <span key={skill} className="skill-badge">{skill}</span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p>—</p>
+                  )}
                 </div>
               </div>
 

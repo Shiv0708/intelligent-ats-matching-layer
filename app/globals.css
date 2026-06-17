@@ -74,7 +74,7 @@ button, input, textarea {
 
 .container-wide {
   max-width: 100%;
-  padding: 24px;
+  padding: 12px 16px;
 }
 
 .header {
@@ -391,7 +391,7 @@ select {
 .layout-three-col {
   display: grid;
   grid-template-columns: 260px minmax(360px, 1fr) 320px;
-  gap: 20px;
+  gap: 14px;
   align-items: start;
 }
 
@@ -413,6 +413,13 @@ select {
 .details-panel,
 .criteria-panel {
   min-height: 320px;
+}
+
+/* Project matches container - full width with minimal padding */
+.container-project-matches {
+  max-width: 100%;
+  margin: 0;
+  padding: 12px 16px;
 }
 
 .candidate-list {
@@ -1496,6 +1503,34 @@ select {
   opacity: 0.75;
   cursor: not-allowed;
   transform: none;
+}
+
+/* Skills display styles */
+.skills-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 0;
+}
+
+.skill-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: var(--tag-bg);
+  color: var(--tag-text);
+  white-space: nowrap;
+  border: 1px solid rgba(3, 105, 161, 0.15);
+}
+
+.skills-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
 }
 
 .parse-spinner {
