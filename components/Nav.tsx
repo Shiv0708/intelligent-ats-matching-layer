@@ -3,10 +3,11 @@
 import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import ThemeToggle from '@/components/ThemeToggle';
 
 const links = [
-  { href: '/', label: 'Parse' },
+  { href: '/parse', label: 'Parse' },
   { href: '/candidates', label: 'Candidates' },
   { href: '/pipeline', label: 'Pipeline' },
   { href: '/automations', label: 'Automations' },
@@ -19,11 +20,20 @@ const links = [
 export default function Nav() {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   if (pathname === '/login') return null;
 
   return (
-    <nav className="nav">
+    <nav className={`nav ${scrolled ? 'nav-scrolled' : ''}`}>
       <Link href="/" className="nav-brand">ATS</Link>
       <div className="nav-links">
         {links.map((link) => (

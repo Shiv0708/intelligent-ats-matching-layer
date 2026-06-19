@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { PIPELINE_STAGES } from '@/lib/pipeline-stages';
 
 interface ApplicationCard {
@@ -25,6 +25,8 @@ export default function PipelinePage() {
   const [board, setBoard] = useState<Record<string, ApplicationCard[]>>({});
   const [jobs, setJobs] = useState<Job[]>([]);
   const [jobFilter, setJobFilter] = useState('');
+  const [candidateQuery, setCandidateQuery] = useState('');
+  const [pendingQuery, setPendingQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [draggingId, setDraggingId] = useState<string | null>(null);
 
@@ -45,6 +47,28 @@ export default function PipelinePage() {
   useEffect(() => {
     load();
   }, [load]);
+
+  const filteredBoard = useMemo(() => {
+    if (!candidateQuery) return board;
+    const q = candidateQuery.trim().toLowerCase();
+    const result: Record<string, ApplicationCard[]> = {};
+    PIPELINE_STAGES.forEach((s) => {
+      result[s.id] = (board[s.id] ?? []).filter((card) => {
+        return (
+          (card.candidateName || '').toLowerCase().includes(q) ||
+          (card.jobTitle || '').toLowerCase().includes(q) ||
+          (card.email || '').toLowerCase().includes(q)
+        );
+      });
+    });
+    return result;
+  }, [board, candidateQuery]);
+
+  const doSearch = () => setCandidateQuery(pendingQuery);
+  const clearSearch = () => {
+    setPendingQuery('');
+    setCandidateQuery('');
+  };
 
   const moveCard = async (applicationId: string, newStage: string) => {
     const res = await fetch(`/api/pipeline/${applicationId}`, {
@@ -84,6 +108,19 @@ export default function PipelinePage() {
             Refresh
           </button>
         </div>
+
+        <div className="pipeline-search-row">
+          <input
+            className="pipeline-search-input"
+            type="search"
+            placeholder="Search candidates, job or email"
+            value={pendingQuery}
+            onChange={(e) => setPendingQuery(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') doSearch(); }}
+          />
+          <button type="button" className="pipeline-search-btn" onClick={doSearch}>Search</button>
+          <button type="button" className="btn-secondary" onClick={clearSearch}>Clear</button>
+        </div>
       </section>
 
       <section className="pipeline-legend panel">
@@ -102,7 +139,7 @@ export default function PipelinePage() {
       ) : (
         <div className="pipeline-board">
           {PIPELINE_STAGES.map((stage) => {
-            const cards = board[stage.id] ?? [];
+            const cards = filteredBoard[stage.id] ?? [];
             return (
               <div
                 key={stage.id}

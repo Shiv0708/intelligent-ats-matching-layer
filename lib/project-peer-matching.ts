@@ -49,7 +49,7 @@ function keysMatch(a: string, b: string): boolean {
   if (aTokens.size === 0 || bTokens.size === 0) return false;
   let shared = 0;
   for (const t of aTokens) {
-    if (bTokens.has(t)) shared += 1;
+    if (bTokens.has(t)) shared += 1;  
   }
   const minSize = Math.min(aTokens.size, bTokens.size);
   const threshold = Math.max(1, Math.ceil(minSize * 0.6));
@@ -150,7 +150,7 @@ export async function findAllProjectPeerMatches(): Promise<ProjectPeerMatch[]> {
       );
 
       if (!group) {
-        group = {
+        group = {         
           clientKey: clientA,
           projectTypeKey: typeA,
           clientDisplay: a.clientName ?? clientA,
@@ -241,7 +241,6 @@ export async function findPeerMatchesForCandidate(candidateId: string): Promise<
       }
     }
   }
-
   return result;
 }
 
