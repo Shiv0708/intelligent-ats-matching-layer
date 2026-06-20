@@ -204,7 +204,7 @@ export default function LandingPage() {
     const height = rect.height;
     const mouseX = e.clientX - rect.left - width / 2;
     const mouseY = e.clientY - rect.top - height / 2;
-    
+
     // Smooth 3D tilt
     const rX = -(mouseY / height) * 12;
     const rY = (mouseX / width) * 12;
@@ -230,11 +230,11 @@ export default function LandingPage() {
       <div className="scroll-progress-bar" style={{ width: `${scrollProgress}%` }} />
 
       {/* Mouse follow glow */}
-      <div 
-        className="cursor-glow" 
-        style={{ 
-          transform: `translate(${mousePos.x}px, ${mousePos.y}px) translate(-50%, -50%)` 
-        }} 
+      <div
+        className="cursor-glow"
+        style={{
+          transform: `translate(${mousePos.x}px, ${mousePos.y}px) translate(-50%, -50%)`
+        }}
       />
 
       {/* Mesh Background */}
@@ -275,7 +275,7 @@ export default function LandingPage() {
 
       {/* Interactive 3D Mockup Section */}
       <section className="laptop-mockup-wrapper scroll-trigger">
-        <div 
+        <div
           className="laptop-screen"
           onMouseMove={handleMockupMouseMove}
           onMouseLeave={handleMockupMouseLeave}
@@ -294,7 +294,7 @@ export default function LandingPage() {
               https://platform.intelligent-ats.com/pipeline
             </div>
             <div className="browser-menu">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" /></svg>
               <div style={{ width: 14, height: 14, borderRadius: '50%', background: 'var(--lp-brand-primary)' }} />
             </div>
           </div>
@@ -307,15 +307,15 @@ export default function LandingPage() {
                 Intelligent ATS
               </div>
               <ul className="live-db-menu">
-                <li 
-                  onClick={() => { setActiveTab('pipeline'); }} 
+                <li
+                  onClick={() => { setActiveTab('pipeline'); }}
                   className={`live-db-menu-item ${activeTab === 'pipeline' ? 'active' : ''}`}
                 >
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="3" width="7" height="9" /><rect x="14" y="3" width="7" height="5" /><rect x="14" y="12" width="7" height="9" /><rect x="3" y="16" width="7" height="5" /></svg>
                   Pipeline Preview
                 </li>
-                <li 
-                  onClick={() => { setActiveTab('analytics'); }} 
+                <li
+                  onClick={() => { setActiveTab('analytics'); }}
                   className={`live-db-menu-item ${activeTab === 'analytics' ? 'active' : ''}`}
                 >
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></svg>
@@ -373,8 +373,8 @@ export default function LandingPage() {
                     </div>
                     <div className="db-pipeline-list">
                       {mockCandidates.map((c) => (
-                        <div 
-                          key={c.id} 
+                        <div
+                          key={c.id}
                           onClick={() => setSelectedCandidate(c)}
                           className={`db-cand-item ${selectedCandidate.id === c.id ? 'selected' : ''}`}
                         >
@@ -546,78 +546,116 @@ export default function LandingPage() {
       {/* Bento Grid Features Section */}
       <section className="landing-features-section scroll-trigger">
         <div className="section-header-center">
-          <span className="section-pre-title">Engineered Capabilities</span>
+          <span className="section-pre-title">Intelligent ATS with Project-Based Experience Verification</span>
           <h2 className="section-main-title">Uncompromising Recruitment Quality</h2>
-          <p className="section-desc-center">
-            Designed for scaling engineering teams. Move past superficial keyword matches and start verifying actual code achievements.
+          <p className="section-desc-center" style={{ maxWidth: '800px', textAlign: 'center', margin: '0 auto', fontSize: '0.95rem', color: 'var(--lp-text-muted)', lineHeight: '1.6' }}>
+            Move beyond superficial keyword filters. We parse, structure, and verify candidate contributions at the project level to ensure real engineering depth and hiring credibility.
           </p>
         </div>
 
         <div className="features-grid">
-          {/* Card 1 */}
+          {/* Card 1: Traditional ATS Failures */}
           <div className="feature-card" onMouseMove={handleCardMouseMove}>
             <div className="feature-icon-wrapper">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--lp-brand-primary)" strokeWidth="2.5">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
             </div>
-            <h3 className="feature-card-title">AI Structured Parsing</h3>
-            <p className="feature-card-desc">
-              Convert unstructured PDF and text resumes into clean JSON containing detailed metrics, technologies, and achievements.
-            </p>
+            <h3 className="feature-card-title" style={{ fontSize: '1.3rem' }}>Traditional ATS Failures</h3>
+            <ul style={{ paddingLeft: '16px', margin: 0, fontSize: '1.05rem', color: 'var(--lp-text-muted)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <li>Rely on raw keyword matching</li>
+              <li>Miss actual real-world skills</li>
+              <li>Vulnerable to resume exaggeration</li>
+            </ul>
           </div>
 
-          {/* Card 2 */}
+          {/* Card 2: Project Metadata Gaps */}
           <div className="feature-card" onMouseMove={handleCardMouseMove}>
             <div className="feature-icon-wrapper">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /><line x1="11" y1="8" x2="11" y2="14" /><line x1="8" y1="11" x2="14" y2="11" /></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--lp-brand-secondary)" strokeWidth="2.5">
+                <line x1="8" y1="6" x2="21" y2="6" />
+                <line x1="8" y1="12" x2="21" y2="12" />
+                <line x1="8" y1="18" x2="21" y2="18" />
+                <line x1="3" y1="6" x2="3.01" y2="6" />
+                <line x1="3" y1="12" x2="3.01" y2="12" />
+                <line x1="3" y1="18" x2="3.01" y2="18" />
+              </svg>
             </div>
-            <h3 className="feature-card-title">Synergy Matching</h3>
-            <p className="feature-card-desc">
-              Understand how well a candidate fits a role profile based on technical scope and system architectural design complexity.
-            </p>
+            <h3 className="feature-card-title" style={{ fontSize: '1.3rem' }}>Project Metadata Gaps</h3>
+            <ul style={{ paddingLeft: '16px', margin: 0, fontSize: '1.05rem', color: 'var(--lp-text-muted)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <li>Missing team sizes & durations</li>
+              <li>Vague role & ownership levels</li>
+              <li>No verified business metrics</li>
+            </ul>
           </div>
 
-          {/* Card 3 */}
+          {/* Card 3: 5 Core Questions */}
           <div className="feature-card" onMouseMove={handleCardMouseMove}>
             <div className="feature-icon-wrapper">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /><polyline points="3.27 6.96 12 12.01 20.73 6.96" /><line x1="12" y1="22.08" x2="12" y2="12" /></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--lp-brand-tertiary)" strokeWidth="2.5">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
             </div>
-            <h3 className="feature-card-title">Project Evaluation</h3>
-            <p className="feature-card-desc">
-              Quantify the scope, metrics, and business logic complexity of past engineering contributions automatically.
-            </p>
+            <h3 className="feature-card-title" style={{ fontSize: '1.3rem' }}>5 Core Questions</h3>
+            <ul style={{ paddingLeft: '16px', margin: 0, fontSize: '1.05rem', color: 'var(--lp-text-muted)', display: 'flex', flexDirection: 'column', gap: '8px', listStyleType: 'decimal' }}>
+              <li>What was built and its architecture?</li>
+              <li>What was the specific engineering role?</li>
+              <li>How much ownership was held?</li>
+              <li>What was the business impact?</li>
+              <li>Can contributions be verified?</li>
+            </ul>
           </div>
 
-          {/* Card 4 */}
+          {/* Card 4: Formatting Constraints */}
           <div className="feature-card" onMouseMove={handleCardMouseMove}>
             <div className="feature-icon-wrapper">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2.5">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+              </svg>
             </div>
-            <h3 className="feature-card-title">Authorship Verification</h3>
-            <p className="feature-card-desc">
-              Identify code copiers and verify github commit patterns to screen out low authorship and plagiarism.
-            </p>
+            <h3 className="feature-card-title" style={{ fontSize: '1.3rem' }}>Formatting Constraints</h3>
+            <ul style={{ paddingLeft: '16px', margin: 0, fontSize: '1.05rem', color: 'var(--lp-text-muted)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <li>No images, graphics, or text boxes</li>
+              <li>Avoid multi-column resume layouts</li>
+              <li>Avoid complex tables and fonts</li>
+            </ul>
           </div>
 
-          {/* Card 5 */}
+          {/* Card 5: Standardized Project Blocks */}
           <div className="feature-card" onMouseMove={handleCardMouseMove}>
             <div className="feature-icon-wrapper">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--lp-brand-primary)" strokeWidth="2.5">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                <line x1="9" y1="3" x2="9" y2="21" />
+                <line x1="9" y1="9" x2="21" y2="9" />
+                <line x1="9" y1="15" x2="21" y2="15" />
+              </svg>
             </div>
-            <h3 className="feature-card-title">Conversion Analytics</h3>
-            <p className="feature-card-desc">
-              Track candidates passing through screening, and review aggregated data of tech stacks to gauge team synergy.
-            </p>
+            <h3 className="feature-card-title" style={{ fontSize: '1.3rem' }}>Standardized Project Blocks</h3>
+            <ul style={{ paddingLeft: '16px', margin: 0, fontSize: '1.05rem', color: 'var(--lp-text-muted)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <li>Project name, domain & duration</li>
+              <li>Role, technologies & team size</li>
+              <li>Ownership level & business impact</li>
+            </ul>
           </div>
 
-          {/* Card 6 */}
+          {/* Card 6: Delivery Pathways */}
           <div className="feature-card" onMouseMove={handleCardMouseMove}>
             <div className="feature-icon-wrapper">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--lp-brand-secondary)" strokeWidth="2.5">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
             </div>
-            <h3 className="feature-card-title">Plagiarism Check</h3>
-            <p className="feature-card-desc">
-              Review automatically generated credibility flags matching code sections to public boilerplates.
-            </p>
+            <h3 className="feature-card-title" style={{ fontSize: '1.3rem' }}>Dynamic Pathways</h3>
+            <ul style={{ paddingLeft: '16px', margin: 0, fontSize: '1.05rem', color: 'var(--lp-text-muted)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <li>Standardized format parameters</li>
+              <li>Progressive profile completion prompts</li>
+            </ul>
           </div>
         </div>
       </section>
@@ -626,10 +664,12 @@ export default function LandingPage() {
       <section className="landing-benefits-section scroll-trigger">
         <div className="benefits-layout">
           <div>
-            <span className="section-pre-title">Hiring Outcomes</span>
+            <span className="section-pre-title">System Solutions</span>
             <h2 className="section-main-title" style={{ textAlign: 'left' }}>The Software Team Upgrade</h2>
-            <p style={{ color: 'var(--lp-text-muted)', lineHeight: '1.65', fontSize: '1.05rem', margin: '0 0 32px 0', textAlign: 'left' }}>
-              Unlike simple word-matching systems, Intelligent ATS verifies candidate claims directly against architectural footprints, boosting hiring quality.
+            <p style={{ color: 'var(--lp-text-muted)', lineHeight: '1.65', fontSize: '1.15rem', margin: '0 0 16px 0', textAlign: 'left' }}>
+            </p>
+            <p style={{ color: 'var(--lp-text-muted)', lineHeight: '1.65', fontSize: '1.15rem', margin: '0 0 32px 0', textAlign: 'left' }}>
+              Our project-centric, credibility-driven ATS platform solves this by extracting and verifying structured engineering experience directly from resumes.
             </p>
             <Link href="/parse" className="btn-primary-gradient" style={{ display: 'inline-block' }}>
               Get Started Now
@@ -638,26 +678,26 @@ export default function LandingPage() {
 
           <div className="benefits-content">
             <div className="benefit-item">
-              <div className="benefit-bullet">✓</div>
+              <div className="benefit-bullet" style={{ width: '28px', height: '28px', fontSize: '0.95rem' }}>✓</div>
               <div className="benefit-info">
-                <h3 className="benefit-title">65% Faster Sifting Time</h3>
-                <p className="benefit-desc">Verify coding complexity automatically and route high synergy profiles directly to panel reviews.</p>
+                <h3 className="benefit-title" style={{ fontSize: '1.25rem' }}>Eliminate Hiring Mismatch</h3>
+                <p className="benefit-desc" style={{ fontSize: '1.05rem', lineHeight: '1.6' }}>Prevent project delays, reduced productivity, and inefficient resource allocation caused by vague resume descriptions.</p>
               </div>
             </div>
 
             <div className="benefit-item">
-              <div className="benefit-bullet">✓</div>
+              <div className="benefit-bullet" style={{ width: '28px', height: '28px', fontSize: '0.95rem' }}>✓</div>
               <div className="benefit-info">
-                <h3 className="benefit-title">Drastically Reduce Plagiarisms</h3>
-                <p className="benefit-desc">Detect copy-pasted portfolio modules and verify authorship before scheduling interviews.</p>
+                <h3 className="benefit-title" style={{ fontSize: '1.25rem' }}>Advanced NLP Parsing</h3>
+                <p className="benefit-desc" style={{ fontSize: '1.05rem', lineHeight: '1.6' }}>Extract structured projects, technologies, roles, responsibilities, team size, duration, and business impact parameters.</p>
               </div>
             </div>
 
             <div className="benefit-item">
-              <div className="benefit-bullet">✓</div>
+              <div className="benefit-bullet" style={{ width: '28px', height: '28px', fontSize: '0.95rem' }}>✓</div>
               <div className="benefit-info">
-                <h3 className="benefit-title">Verified Project Profiles</h3>
-                <p className="benefit-desc">Read clean data sheets describing what developers built, what libraries they owned, and how they shipped it.</p>
+                <h3 className="benefit-title" style={{ fontSize: '1.25rem' }}>Credibility Verification Layer</h3>
+                <p className="benefit-desc" style={{ fontSize: '1.05rem', lineHeight: '1.6' }}>Build a verifiable database and cross-check candidate ownership claims for reliable, predictable hiring outcomes.</p>
               </div>
             </div>
           </div>
@@ -688,33 +728,33 @@ export default function LandingPage() {
                 <form className="demo-form" onSubmit={handleDemoSubmit}>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--lp-text-muted)', marginBottom: '6px', display: 'block', fontWeight: 700 }}>Name</label>
-                    <input 
-                      type="text" 
-                      className="demo-input" 
-                      placeholder="Sarah Jenkins" 
-                      required 
-                      value={demoForm.name} 
+                    <input
+                      type="text"
+                      className="demo-input"
+                      placeholder="Sarah Jenkins"
+                      required
+                      value={demoForm.name}
                       onChange={(e) => setDemoForm({ ...demoForm, name: e.target.value })}
                     />
                   </div>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--lp-text-muted)', marginBottom: '6px', display: 'block', fontWeight: 700 }}>Corporate Email</label>
-                    <input 
-                      type="email" 
-                      className="demo-input" 
-                      placeholder="sarah@company.com" 
-                      required 
-                      value={demoForm.email} 
+                    <input
+                      type="email"
+                      className="demo-input"
+                      placeholder="sarah@company.com"
+                      required
+                      value={demoForm.email}
                       onChange={(e) => setDemoForm({ ...demoForm, email: e.target.value })}
                     />
                   </div>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--lp-text-muted)', marginBottom: '6px', display: 'block', fontWeight: 700 }}>Company</label>
-                    <input 
-                      type="text" 
-                      className="demo-input" 
-                      placeholder="Acme Inc" 
-                      value={demoForm.company} 
+                    <input
+                      type="text"
+                      className="demo-input"
+                      placeholder="Acme Inc"
+                      value={demoForm.company}
                       onChange={(e) => setDemoForm({ ...demoForm, company: e.target.value })}
                     />
                   </div>

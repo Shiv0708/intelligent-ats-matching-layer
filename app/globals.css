@@ -2112,15 +2112,20 @@ select {
 
 /* --- Sticky Glassmorphism Navbar --- */
 .nav {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1000 !important;
   transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease;
-  background: transparent;
-  border-bottom: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.75) !important;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.5) !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.02) !important;
 }
-.nav-scrolled {
-  background: var(--lp-card-bg) !important;
-  border-bottom-color: var(--lp-card-border) !important;
-  backdrop-filter: var(--lp-glass-blur) !important;
-  box-shadow: var(--lp-card-shadow) !important;
+
+[data-theme='dark'] .nav {
+  background: rgba(11, 17, 32, 0.75) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
 }
 
 /* --- Cursor-Follow Glow --- */
@@ -2128,7 +2133,7 @@ select {
   position: fixed;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(13, 148, 136, 0.14) 0%, rgba(29, 78, 216, 0.06) 50%, transparent 100%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, rgba(20, 184, 166, 0.04) 30%, rgba(37, 99, 235, 0.01) 60%, transparent 100%);
   border-radius: 50%;
   pointer-events: none;
   z-index: 1;
@@ -2137,7 +2142,7 @@ select {
   will-change: transform;
 }
 [data-theme='light'] .cursor-glow {
-  background: radial-gradient(circle, rgba(13, 148, 136, 0.08) 0%, rgba(15, 23, 42, 0.06) 50%, transparent 100%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, rgba(20, 184, 166, 0.02) 40%, rgba(37, 99, 235, 0.005) 70%, transparent 100%);
 }
 
 /* --- Background Grid & Gradient Blobs --- */
@@ -2948,6 +2953,23 @@ select {
 @media (max-width: 900px) {
   .features-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.guidelines-layout {
+  display: grid;
+  gap: 30px;
+}
+.guidelines-layout--2col {
+  grid-template-columns: 1fr 1fr;
+}
+.guidelines-layout--3col2col {
+  grid-template-columns: 1.2fr 1fr;
+}
+@media (max-width: 768px) {
+  .guidelines-layout--2col,
+  .guidelines-layout--3col2col {
+    grid-template-columns: 1fr !important;
   }
 }
 

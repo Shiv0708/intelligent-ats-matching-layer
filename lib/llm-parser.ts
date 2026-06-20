@@ -143,6 +143,7 @@ type GeminiGenerateResponse = {
 async function callGeminiModel(
   apiKey: string,
   model: string,
+  systemPrompt: string,
   userText: string
 ): Promise<{ ok: true; text: string } | { ok: false; status: number; message: string }> {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
@@ -152,7 +153,7 @@ async function callGeminiModel(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       systemInstruction: {
-        parts: [{ text: SYSTEM_PROMPT }],
+        parts: [{ text: systemPrompt }],
       },
       contents: [
         {
@@ -206,7 +207,7 @@ export async function parseResumeWithLlm(rawText: string): Promise<ParsedResume>
   const failures: string[] = [];
 
   for (const model of models) {
-    const result = await callGeminiModel(apiKey, model, userText);
+    const result = await callGeminiModel(apiKey, model, SYSTEM_PROMPT, userText);
 
     if (result.ok) {
       const parsed = parseJsonSafe(result.text);
@@ -226,4 +227,74 @@ export async function parseResumeWithLlm(rawText: string): Promise<ParsedResume>
     `All Gemini models hit quota or are unavailable. Tried: ${models.join(', ')}. ` +
       `Use a Flash-Lite model (e.g. gemini-2.5-flash-lite). Details: ${failures.join(' | ')}`
   );
+}
+
+export interface ResumeClassification {
+  classification: 'Technical' | 'Non-Technical' | 'Hybrid';
+  confidence: number;
+  reason: string;
+}
+
+export async function classifyResumeWithLlm(rawText: string): Promise<ResumeClassification> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error('GEMINI_API_KEY is not set.');
+  }
+
+  const models = getModelsToTry();
+  const userText = `Analyze the complete resume and classify it. Return JSON only:\n\n${rawText.slice(0, 120000)}`;
+
+  const CLASSIFY_SYSTEM_PROMPT = `You are an ATS resume classifier.
+
+Analyze the complete resume and classify it into exactly one category:
+
+1. Technical
+2. Non-Technical
+3. Hybrid
+
+Rules for Classification:
+- **Technical**: Candidate performs direct technical work like coding, software development, system architecture, database design, infrastructure administration, or hands-on engineering.
+- **Non-Technical**: Candidate performs sales, business development, HR, marketing, operations, finance, or administrative functions.
+  - *CRITICAL RULE*: Primarily Sales or Business Development resumes (including IT solution sales, ERP sales, or sales involving software product demos/collaborations with engineering teams) must be classified as **Non-Technical**, NOT Hybrid. Just mentioning IT sales, software products, or product demonstrations does not qualify a resume as having a technical aspect unless there is a proper, detailed description of actual technical skills (like programming languages, software development methodologies, database engineering, or direct hands-on technical work).
+- **Hybrid**: Candidate's role directly requires a balance of core technical skills and non-technical business functions (e.g. Product Manager, Technical Business Analyst, Scrum Master, or actual Technical Sales Engineer who does code level integrations/deployments).
+
+Consider:
+- Job Titles
+- Skills
+- Work Experience
+- Responsibilities
+- Education
+- Certifications
+
+Return JSON only:
+{
+  "classification": "Technical | Non-Technical | Hybrid",
+  "confidence": 0.95,
+  "reason": "explanation of why it belongs to this category"
+}
+`;
+
+  const failures: string[] = [];
+
+  for (const model of models) {
+    const result = await callGeminiModel(apiKey, model, CLASSIFY_SYSTEM_PROMPT, userText);
+
+    if (result.ok) {
+      const parsed = parseJsonSafe(result.text) as any;
+      const classification = parsed.classification || 'Hybrid';
+      const confidence = typeof parsed.confidence === 'number' ? parsed.confidence : 0.5;
+      const reason = parsed.reason || '';
+      return { classification, confidence, reason };
+    }
+
+    failures.push(`${model}: ${result.message.slice(0, 200)}`);
+
+    if (isQuotaError(result.status, result.message) || isModelUnavailable(result.status, result.message)) {
+      continue;
+    }
+
+    throw new Error(`Gemini API error (${result.status}) [${model}]: ${result.message}`);
+  }
+
+  throw new Error(`All Gemini models failed to classify. Details: ${failures.join(' | ')}`);
 }

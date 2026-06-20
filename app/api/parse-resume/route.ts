@@ -4,7 +4,7 @@ import { createApplication } from '@/lib/application-repository';
 import { saveParsedCandidate } from '@/lib/candidate-repository';
 import { analyzeCredibility } from '@/lib/credibility';
 import { flattenParsedResume } from '@/lib/flatten-resume';
-import { parseResumeWithLlm } from '@/lib/llm-parser';
+import { parseResumeWithLlm, classifyResumeWithLlm } from '@/lib/llm-parser';
 import { extractTextFromUpload } from '@/lib/text-extraction';
 
 export const runtime = 'nodejs';
@@ -41,7 +41,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No resume text or file detected.' }, { status: 400 });
     }
 
-    const parsed = await parseResumeWithLlm(rawText);
+    let classification = null;
+    const [parsed] = await Promise.all([
+      parseResumeWithLlm(rawText),
+      classifyResumeWithLlm(rawText)
+        .then((res) => { classification = res; })
+        .catch((err) => { console.error('[classifier] failed:', err); })
+    ]);
+
     const credibility = analyzeCredibility(parsed);
     const saved = await saveParsedCandidate(parsed, rawText, credibility);
     const flattened = flattenParsedResume(parsed);
@@ -66,6 +73,7 @@ export async function POST(request: Request) {
       flattened,
       credibility,
       candidate: saved,
+      classification,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown parser error';

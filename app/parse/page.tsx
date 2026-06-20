@@ -16,6 +16,11 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [savedId, setSavedId] = useState<string | null>(null);
+  const [classification, setClassification] = useState<{
+    classification: string;
+    confidence: number;
+    reason: string;
+  } | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -53,6 +58,7 @@ export default function HomePage() {
     setLoading(true);
     setError(null);
     setSavedId(null);
+    setClassification(null);
 
     try {
       const formData = new FormData();
@@ -65,6 +71,9 @@ export default function HomePage() {
       if (!response.ok) throw new Error(data.error || 'Parser error');
 
       setSavedId(data.candidate.id);
+      if (data.classification) {
+        setClassification(data.classification);
+      }
       setResumeText('');
       setFile(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -200,7 +209,41 @@ export default function HomePage() {
             <div className="parse-alert parse-alert--success" role="status">
               <p className="parse-success-title">Candidate saved successfully</p>
               <p className="parse-success-desc">Added to pipeline at Applied stage.</p>
-              <div className="parse-success-actions">
+              
+              {classification && (
+                <div style={{
+                  marginTop: '16px',
+                  padding: '16px',
+                  borderRadius: '12px',
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border)',
+                  textAlign: 'left'
+                }}>
+                  <p style={{ margin: '0 0 8px 0', fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                    AI Resume Classification
+                  </p>
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '8px' }}>
+                    <span style={{
+                      padding: '4px 10px',
+                      borderRadius: '999px',
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                      background: classification.classification === 'Technical' ? '#dcfce7' : classification.classification === 'Non-Technical' ? '#fee2e2' : '#fef9c3',
+                      color: classification.classification === 'Technical' ? '#166534' : classification.classification === 'Non-Technical' ? '#991b1b' : '#854d0e'
+                    }}>
+                      {classification.classification}
+                    </span>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                      Confidence: {Math.round(classification.confidence * 100)}%
+                    </span>
+                  </div>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
+                    <strong>Reason:</strong> {classification.reason}
+                  </p>
+                </div>
+              )}
+
+              <div className="parse-success-actions" style={{ marginTop: '16px' }}>
                 <Link href={`/candidates/${savedId}`} className="parse-success-btn parse-success-btn--primary">
                   View profile
                 </Link>
