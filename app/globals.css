@@ -1604,14 +1604,14 @@ select {
 .parse-success-title {
   margin: 0;
   font-weight: 800;
-  font-size: 1.05rem;
+  font-size: 1.25rem;
   color: #065f46;
 }
 
 .parse-success-desc {
   margin: 6px 0 14px;
   color: #047857;
-  font-size: 0.9rem;
+  font-size: 1.05rem;
 }
 
 .parse-success-actions {
@@ -3220,6 +3220,23 @@ select {
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+/* Highlight styling for ERP/CRM/Excel context */
+.highlight-context-badge {
+  background-color: #fde047 !important; /* bright highlighter yellow */
+  color: #0f172a !important; /* dark slate text */
+  padding: 2px 5px !important;
+  border-radius: 4px !important;
+  font-weight: 700 !important;
+  border: 1px solid #eab308 !important;
+  display: inline !important;
+}
+
+[data-theme='dark'] .highlight-context-badge {
+  background-color: #fde047 !important;
+  color: #0f172a !important;
+  border-color: #ca8a04 !important;
 }
 
 

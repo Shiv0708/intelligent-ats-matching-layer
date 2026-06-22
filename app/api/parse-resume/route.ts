@@ -41,15 +41,41 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No resume text or file detected.' }, { status: 400 });
     }
 
-    let classification = null;
-    const [parsed] = await Promise.all([
+    const [parsed, classification] = await Promise.all([
       parseResumeWithLlm(rawText),
       classifyResumeWithLlm(rawText)
-        .then((res) => { classification = res; })
-        .catch((err) => { console.error('[classifier] failed:', err); })
+        .catch((err) => {
+          console.error('[classifier] failed:', err);
+          return null;
+        })
     ]);
 
     const credibility = analyzeCredibility(parsed);
+
+    // Explicitly flag if Technical/Hybrid classification is due to tools/system skills (ERP, CRM, Excel, etc.)
+    const hasNonCodingSkills = parsed.skills.some((s) =>
+      /\b(erp|crm|excel|sap|salesforce|hubspot|tableau|power.?bi|dynamics.?365|oracle.?erp|zoho|pipedrive|spreadsheets?|microsoft.?office)\b/i.test(s)
+    );
+    const isTechOrHybrid =
+      classification &&
+      ((classification.classification === 'Technical') || (classification.classification === 'Hybrid'));
+    const reasonContainsFlag =
+      classification &&
+      ((classification.reason.includes('FLAG')) ||
+        (classification.reason.includes('ERP')) ||
+        (classification.reason.includes('CRM')) ||
+        (classification.reason.includes('Excel')) ||
+        (classification.reason.toLowerCase().includes('sap')) ||
+        (classification.reason.toLowerCase().includes('salesforce')) ||
+        (classification.reason.toLowerCase().includes('hubspot')));
+
+    if (isTechOrHybrid && (hasNonCodingSkills || reasonContainsFlag)) {
+      const flagText = 'Technical/Hybrid classification is due to ERP/CRM/Excel-related skills (not a core software developer/engineer)';
+      if (!credibility.flags.includes(flagText)) {
+        credibility.flags.push(flagText);
+      }
+    }
+
     const saved = await saveParsedCandidate(parsed, rawText, credibility);
     const flattened = flattenParsedResume(parsed);
 

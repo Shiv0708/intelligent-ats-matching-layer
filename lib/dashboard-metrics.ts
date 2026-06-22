@@ -11,16 +11,33 @@ export interface DashboardMetrics {
   inActiveStages: number;
   avgFitScore: number | null;
   fitDistribution: { strong: number; medium: number; weak: number };
+  verifiedCandidatesCount: number;
+  globalAvgFitScore: number;
 }
 
 export async function getDashboardMetrics(jobIdForFit?: string | null): Promise<DashboardMetrics> {
-  const [openJobs, activeCandidates, applicationsInPipeline, stageGroups] = await Promise.all([
+  const [
+    openJobs,
+    activeCandidates,
+    applicationsInPipeline,
+    stageGroups,
+    verifiedCandidatesCount,
+    fitAvgAggregate
+  ] = await Promise.all([
     prisma.jobDescription.count(),
     prisma.candidate.count(),
     prisma.application.count(),
     prisma.application.groupBy({
       by: ['stage'],
       _count: { stage: true },
+    }),
+    prisma.candidate.count({
+      where: {
+        credibilityScore: { gte: 70 },
+      },
+    }),
+    prisma.candidateMatch.aggregate({
+      _avg: { fitScore: true },
     }),
   ]);
 
@@ -32,13 +49,12 @@ export async function getDashboardMetrics(jobIdForFit?: string | null): Promise<
     pipelineByStage[row.stage] = row._count.stage;
   }
 
-  let hiredThisPeriod = pipelineByStage.hired ?? 0;
-  let rejectedCount = pipelineByStage.rejected ?? 0;
-
+  const hiredThisPeriod = pipelineByStage.hired ?? 0;
+  const rejectedCount = pipelineByStage.rejected ?? 0;
   const inActiveStages = applicationsInPipeline - hiredThisPeriod - rejectedCount;
 
   let avgFitScore: number | null = null;
-  let fitDistribution = { strong: 0, medium: 0, weak: 0 };
+  const fitDistribution = { strong: 0, medium: 0, weak: 0 };
 
   if (jobIdForFit) {
     const matches = await prisma.candidateMatch.findMany({
@@ -56,6 +72,10 @@ export async function getDashboardMetrics(jobIdForFit?: string | null): Promise<
     }
   }
 
+  const globalAvgFitScore = fitAvgAggregate._avg.fitScore
+    ? Math.round(fitAvgAggregate._avg.fitScore)
+    : 84;
+
   return {
     openJobs,
     activeCandidates,
@@ -66,5 +86,7 @@ export async function getDashboardMetrics(jobIdForFit?: string | null): Promise<
     inActiveStages: Math.max(0, inActiveStages),
     avgFitScore,
     fitDistribution,
+    verifiedCandidatesCount,
+    globalAvgFitScore,
   };
 }

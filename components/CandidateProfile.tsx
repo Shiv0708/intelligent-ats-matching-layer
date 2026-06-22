@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import type { CandidateRecord } from '@/lib/types/resume';
 import { PIPELINE_STAGES, getStageMeta, type PipelineStageId } from '@/lib/pipeline-stages';
+import { highlightText } from '@/lib/highlight';
 
 export interface ProjectPeerMatchView {
   projectId: string;
@@ -132,7 +133,7 @@ export default function CandidateProfile({
           <strong>Credibility flags</strong>
           <ul>
             {candidate.credibilityFlags.map((flag) => (
-              <li key={flag}>{flag}</li>
+              <li key={flag}>{highlightText(flag)}</li>
             ))}
           </ul>
         </div>
@@ -142,7 +143,7 @@ export default function CandidateProfile({
         <span className="label">Skills</span>
         <div className="tag-row">
           {candidate.skills.map((skill) => (
-            <span className="tag" key={skill}>{skill}</span>
+            <span className="tag" key={skill}>{highlightText(skill)}</span>
           ))}
         </div>
       </div>
@@ -155,12 +156,12 @@ export default function CandidateProfile({
               <h4>{edu.institution}</h4>
               <p>
                 <strong>Degree:</strong>{' '}
-                {[edu.degree, edu.field].filter(Boolean).join(' — ') || '—'}
+                {highlightText([edu.degree, edu.field].filter(Boolean).join(' — ') || '—')}
               </p>
               <p><strong>Duration:</strong> {edu.duration || '—'}</p>
               {edu.grade && <p><strong>Grade:</strong> {edu.grade}</p>}
               {edu.location && <p><strong>Location:</strong> {edu.location}</p>}
-              {edu.description && <p><strong>Details:</strong> {edu.description}</p>}
+              {edu.description && <p><strong>Details:</strong> {highlightText(edu.description)}</p>}
             </div>
           ))}
         </div>
@@ -172,16 +173,16 @@ export default function CandidateProfile({
           {candidate.workExperience.map((job) => (
             <div className="project-card" key={job.id}>
               <h4>{job.company}</h4>
-              <p><strong>Role:</strong> {job.role || '—'}</p>
+              <p><strong>Role:</strong> {highlightText(job.role || '—')}</p>
               <p><strong>Duration:</strong> {job.duration || '—'}</p>
-              {job.department && <p><strong>Department:</strong> {job.department}</p>}
-              {job.scopeOfWork && <p><strong>Scope of work:</strong> {job.scopeOfWork}</p>}
+              {job.department && <p><strong>Department:</strong> {highlightText(job.department)}</p>}
+              {job.scopeOfWork && <p><strong>Scope of work:</strong> {highlightText(job.scopeOfWork)}</p>}
               {job.location && <p><strong>Location:</strong> {job.location}</p>}
-              <p><strong>Responsibilities:</strong> {job.responsibilities || '—'}</p>
+              <p><strong>Responsibilities:</strong> {highlightText(job.responsibilities || '—')}</p>
               {job.technologies.length > 0 && (
                 <div className="tag-row">
                   {job.technologies.map((tech) => (
-                    <span className="tag" key={tech}>{tech}</span>
+                    <span className="tag" key={tech}>{highlightText(tech)}</span>
                   ))}
                 </div>
               )}
@@ -196,14 +197,14 @@ export default function CandidateProfile({
           {candidate.internships.map((intern) => (
             <div className="project-card" key={intern.id}>
               <h4>{intern.company}</h4>
-              <p><strong>Role:</strong> {intern.role || '—'}</p>
+              <p><strong>Role:</strong> {highlightText(intern.role || '—')}</p>
               <p><strong>Duration:</strong> {intern.duration || '—'}</p>
               {intern.location && <p><strong>Location:</strong> {intern.location}</p>}
-              <p><strong>Responsibilities:</strong> {intern.responsibilities || '—'}</p>
+              <p><strong>Responsibilities:</strong> {highlightText(intern.responsibilities || '—')}</p>
               {intern.technologies.length > 0 && (
                 <div className="tag-row">
                   {intern.technologies.map((tech) => (
-                    <span className="tag" key={tech}>{tech}</span>
+                    <span className="tag" key={tech}>{highlightText(tech)}</span>
                   ))}
                 </div>
               )}
@@ -228,31 +229,31 @@ export default function CandidateProfile({
         return (
           <div className="project-card" key={project.id}>
             <div className="project-header">
-              <h3>{title}</h3>
+              <h3>{highlightText(title)}</h3>
               <span className={`review-badge review-${project.reviewStatus}`}>
                 {project.reviewStatus}
               </span>
             </div>
-            <p><strong>Client:</strong> {project.clientName || '—'}</p>
-            <p><strong>Project type:</strong> {project.projectType || '—'}</p>
-            <p><strong>Role:</strong> {project.role || '—'}</p>
+            <p><strong>Client:</strong> {highlightText(project.clientName || '—')}</p>
+            <p><strong>Project type:</strong> {highlightText(project.projectType || '—')}</p>
+            <p><strong>Role:</strong> {highlightText(project.role || '—')}</p>
             <p><strong>Duration:</strong> {project.duration || '—'}</p>
             {summaryLine && (
-              <p><strong>Summary:</strong> {summaryLine}</p>
+              <p><strong>Summary:</strong> {highlightText(summaryLine)}</p>
             )}
             {contributionLines.length > 0 && (
               <div>
                 <strong>Contributions:</strong>
                 <ul>
                   {contributionLines.map((line, contributionIndex) => (
-                    <li key={contributionIndex}>{line}</li>
+                    <li key={contributionIndex}>{highlightText(line)}</li>
                   ))}
                 </ul>
               </div>
             )}
             <div className="tag-row">
               {project.technologies.map((tech) => (
-                <span className="tag" key={tech}>{tech}</span>
+                <span className="tag" key={tech}>{highlightText(tech)}</span>
               ))}
             </div>
             {Object.keys(project.businessImpact).length > 0 && (

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { highlightText } from '@/lib/highlight';
 
 interface Job {
   id: string;
@@ -219,26 +220,26 @@ export default function HomePage() {
                   border: '1px solid var(--border)',
                   textAlign: 'left'
                 }}>
-                  <p style={{ margin: '0 0 8px 0', fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                  <p style={{ margin: '0 0 8px 0', fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                     AI Resume Classification
                   </p>
                   <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '8px' }}>
                     <span style={{
                       padding: '4px 10px',
                       borderRadius: '999px',
-                      fontSize: '0.8rem',
+                      fontSize: '0.9rem',
                       fontWeight: 700,
                       background: classification.classification === 'Technical' ? '#dcfce7' : classification.classification === 'Non-Technical' ? '#fee2e2' : '#fef9c3',
                       color: classification.classification === 'Technical' ? '#166534' : classification.classification === 'Non-Technical' ? '#991b1b' : '#854d0e'
                     }}>
                       {classification.classification}
                     </span>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                    <span style={{ fontSize: '0.95rem', color: 'var(--text-secondary)' }}>
                       Confidence: {Math.round(classification.confidence * 100)}%
                     </span>
                   </div>
-                  <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
-                    <strong>Reason:</strong> {classification.reason}
+                  <p style={{ margin: 0, fontSize: '1rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
+                    <strong>Reason:</strong> {highlightText(classification.reason)}
                   </p>
                 </div>
               )}

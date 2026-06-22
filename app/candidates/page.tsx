@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { BOOLEAN_SEARCH_HELP } from '@/lib/boolean-search';
 import type { CandidateRecord } from '@/lib/types/resume';
+import { highlightText } from '@/lib/highlight';
 
 export default function CandidatesPage() {
   const [candidates, setCandidates] = useState<CandidateRecord[]>([]);
@@ -143,7 +144,7 @@ export default function CandidatesPage() {
                     <td>
                       <div className="tag-row compact">
                         {c.skills.slice(0, 4).map((s) => (
-                          <span className="tag" key={s}>{s}</span>
+                          <span className="tag" key={s}>{highlightText(s)}</span>
                         ))}
                         {c.skills.length > 4 && <span className="muted">+{c.skills.length - 4}</span>}
                       </div>

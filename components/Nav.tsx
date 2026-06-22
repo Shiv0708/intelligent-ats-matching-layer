@@ -7,13 +7,13 @@ import { useState, useEffect } from 'react';
 import ThemeToggle from '@/components/ThemeToggle';
 
 const links = [
+  { href: '/', label: 'Dashboard' },
   { href: '/parse', label: 'Parse' },
   { href: '/candidates', label: 'Candidates' },
   { href: '/pipeline', label: 'Pipeline' },
   { href: '/automations', label: 'Automations' },
   { href: '/jobs', label: 'Jobs' },
   { href: '/project-matches', label: 'Project matches' },
-  { href: '/dashboard', label: 'Dashboard' },
   { href: '/audit', label: 'Audit' },
 ]
 
