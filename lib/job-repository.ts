@@ -111,6 +111,8 @@ export async function getRankingsForJob(jobId: string) {
     missingSkills: parseJsonArray(m.missingSkills),
     notes: m.notes,
     credibilityScore: m.candidate.credibilityScore,
+    credibilityFlags: parseJsonArray(m.candidate.credibilityFlags ?? '[]'),
+    skills: parseJsonArray(m.candidate.skills ?? '[]'),
     updatedAt: m.updatedAt.toISOString(),
   }));
 }

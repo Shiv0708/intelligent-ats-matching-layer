@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { BOOLEAN_SEARCH_HELP } from '@/lib/boolean-search';
 import type { CandidateRecord } from '@/lib/types/resume';
 import { highlightText } from '@/lib/highlight';
+import { getCandidateClassification } from '@/lib/classification-helper';
 
 export default function CandidatesPage() {
   const [candidates, setCandidates] = useState<CandidateRecord[]>([]);
@@ -125,6 +126,7 @@ export default function CandidatesPage() {
               <thead>
                 <tr>
                   <th>Name</th>
+                  <th>Technical/Non-Technical</th>
                   <th>Experience</th>
                   <th>Skills</th>
                   <th>Credibility</th>
@@ -133,14 +135,29 @@ export default function CandidatesPage() {
                 </tr>
               </thead>
               <tbody>
-                {candidates.map((c) => (
-                  <tr key={c.id}>
-                    <td>
-                      <strong>{c.candidateName}</strong>
-                      <br />
-                      <span className="muted">{c.email || '—'}</span>
-                    </td>
-                    <td>{c.totalExperience || '—'}</td>
+                {candidates.map((c) => {
+                  const classification = getCandidateClassification(c);
+                  return (
+                    <tr key={c.id}>
+                      <td>
+                        <strong>{c.candidateName}</strong>
+                        <br />
+                        <span className="muted">{c.email || '—'}</span>
+                      </td>
+                      <td style={{ verticalAlign: 'middle' }}>
+                        <span style={{
+                          padding: '4px 10px',
+                          borderRadius: '999px',
+                          fontSize: '0.8rem',
+                          fontWeight: 700,
+                          background: classification === 'Technical' ? '#dcfce7' : classification === 'Non-Technical' ? '#fee2e2' : '#fef9c3',
+                          color: classification === 'Technical' ? '#166534' : classification === 'Non-Technical' ? '#991b1b' : '#854d0e',
+                          display: 'inline-block'
+                        }}>
+                          {classification}
+                        </span>
+                      </td>
+                      <td>{c.totalExperience || '—'}</td>
                     <td>
                       <div className="tag-row compact">
                         {c.skills.slice(0, 4).map((s) => (
@@ -154,8 +171,9 @@ export default function CandidatesPage() {
                     <td>
                       <Link href={`/candidates/${c.id}`} className="text-link">View</Link>
                     </td>
-                  </tr>
-                ))}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

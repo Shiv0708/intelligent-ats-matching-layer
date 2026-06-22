@@ -158,6 +158,7 @@ function mapCandidate(row: CandidateWithRelations | null): CandidateRecord | nul
     rawResumeText: row.rawResumeText,
     credibilityFlags: parseJsonArray(row.credibilityFlags ?? '[]'),
     credibilityScore: row.credibilityScore,
+    classification: row.classification,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
     education,
@@ -177,7 +178,8 @@ export interface ListCandidatesOptions {
 export async function saveParsedCandidate(
   parsed: ParsedResume,
   rawResumeText: string,
-  credibility: { score: number; flags: string[] }
+  credibility: { score: number; flags: string[] },
+  classification: string | null = null
 ) {
   const candidate = await prisma.candidate.create({
     data: {
@@ -189,6 +191,7 @@ export async function saveParsedCandidate(
       rawResumeText,
       credibilityScore: credibility.score,
       credibilityFlags: JSON.stringify(credibility.flags),
+      classification,
       education: {
         create: parsed.education.map((edu, index) => ({
           orderIndex: index,

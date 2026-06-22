@@ -76,7 +76,19 @@ export async function POST(request: Request) {
       }
     }
 
-    const saved = await saveParsedCandidate(parsed, rawText, credibility);
+    if (classification) {
+      const classFlag = `Classification: ${classification.classification}`;
+      if (!credibility.flags.includes(classFlag)) {
+        credibility.flags.push(classFlag);
+      }
+    }
+
+    const saved = await saveParsedCandidate(
+      parsed,
+      rawText,
+      credibility,
+      classification ? classification.classification : null
+    );
     const flattened = flattenParsedResume(parsed);
 
     const application = await createApplication(saved.id, selectedJobId, 'applied');

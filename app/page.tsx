@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { PIPELINE_STAGES } from '@/lib/pipeline-stages';
+import { getCandidateClassification } from '@/lib/classification-helper';
 
 interface Ranking {
   matchId: string;
@@ -15,6 +16,8 @@ interface Ranking {
   missingSkills: string[];
   notes: string | null;
   credibilityScore: number | null;
+  credibilityFlags: string[];
+  skills: string[];
 }
 
 interface Job {
@@ -571,6 +574,7 @@ function DashboardContent() {
                         <tr>
                           <th style={{ color: 'var(--lp-text-muted)' }}>Rank</th>
                           <th style={{ color: 'var(--lp-text-muted)' }}>Candidate</th>
+                          <th style={{ color: 'var(--lp-text-muted)' }}>Profile Type</th>
                           <th style={{ color: 'var(--lp-text-muted)' }}>Fit Score</th>
                           <th style={{ color: 'var(--lp-text-muted)' }}>Matched Skills</th>
                           <th style={{ color: 'var(--lp-text-muted)' }}>Cred.</th>
@@ -578,28 +582,46 @@ function DashboardContent() {
                         </tr>
                       </thead>
                       <tbody>
-                        {rankings.map((r, idx) => (
-                          <tr key={r.matchId} style={{ borderBottom: '1px solid var(--lp-card-border)' }}>
-                            <td style={{ verticalAlign: 'middle' }}>
-                              <span style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                width: '26px',
-                                height: '26px',
-                                borderRadius: '8px',
-                                fontWeight: 800,
-                                fontSize: '0.8rem',
-                                background: idx === 0 ? '#fef3c7' : idx === 1 ? '#e2e8f0' : idx === 2 ? '#ffedd5' : 'rgba(148,163,184,0.05)',
-                                color: idx === 0 ? '#b45309' : idx === 1 ? '#475569' : idx === 2 ? '#c2410c' : 'var(--lp-text)',
-                                justifyContent: 'center'
-                              }}>
-                                {idx + 1}
-                              </span>
-                            </td>
-                            <td>
-                              <strong style={{ fontSize: '0.88rem', color: 'var(--lp-text)' }}>{r.candidateName}</strong>
-                              <div style={{ fontSize: '0.72rem', color: 'var(--lp-text-muted)' }}>{r.email ?? 'No email'}</div>
-                            </td>
+                        {rankings.map((r, idx) => {
+                          const classification = getCandidateClassification({
+                            skills: r.skills || [],
+                            credibilityFlags: r.credibilityFlags || []
+                          });
+                          return (
+                            <tr key={r.matchId} style={{ borderBottom: '1px solid var(--lp-card-border)' }}>
+                              <td style={{ verticalAlign: 'middle' }}>
+                                <span style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  width: '26px',
+                                  height: '26px',
+                                  borderRadius: '8px',
+                                  fontWeight: 800,
+                                  fontSize: '0.8rem',
+                                  background: idx === 0 ? '#fef3c7' : idx === 1 ? '#e2e8f0' : idx === 2 ? '#ffedd5' : 'rgba(148,163,184,0.05)',
+                                  color: idx === 0 ? '#b45309' : idx === 1 ? '#475569' : idx === 2 ? '#c2410c' : 'var(--lp-text)',
+                                  justifyContent: 'center'
+                                }}>
+                                  {idx + 1}
+                                </span>
+                              </td>
+                              <td>
+                                <strong style={{ fontSize: '0.88rem', color: 'var(--lp-text)' }}>{r.candidateName}</strong>
+                                <div style={{ fontSize: '0.72rem', color: 'var(--lp-text-muted)' }}>{r.email ?? 'No email'}</div>
+                              </td>
+                              <td style={{ verticalAlign: 'middle' }}>
+                                <span style={{
+                                  padding: '4px 10px',
+                                  borderRadius: '999px',
+                                  fontSize: '0.75rem',
+                                  fontWeight: 700,
+                                  background: classification === 'Technical' ? '#dcfce7' : classification === 'Non-Technical' ? '#fee2e2' : '#fef9c3',
+                                  color: classification === 'Technical' ? '#166534' : classification === 'Non-Technical' ? '#991b1b' : '#854d0e',
+                                  display: 'inline-block'
+                                }}>
+                                  {classification}
+                                </span>
+                              </td>
                             <td>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '120px' }}>
                                 <div style={{ flex: 1, height: '6px', background: 'rgba(148,163,184,0.08)', borderRadius: '999px', overflow: 'hidden' }}>
@@ -631,8 +653,9 @@ function DashboardContent() {
                               </Link>
                             </td>
                           </tr>
-                        ))}
-                      </tbody>
+                        );
+                      })}
+                    </tbody>
                     </table>
                   </div>
                 )}

@@ -105,6 +105,7 @@ export interface CandidateRecord {
   rawResumeText: string | null;
   credibilityFlags: string[];
   credibilityScore: number | null;
+  classification: string | null;
   createdAt: string;
   updatedAt: string;
   education: Array<{
